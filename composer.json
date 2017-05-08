@@ -1,0 +1,27 @@
+{
+    "name": "yii2x/yii2-menu",
+    "description": "YII2 Menu",
+    "type": "library",
+    "keywords": ["yii2","extension","library","menu","ui"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Yuriy Basov",
+            "email": "basowy@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "repositories":[
+        {
+            "type": "git",
+            "url": "https://github.com/yii2x"
+        }
+    ],      
+    "autoload": {
+        "psr-4": {
+            "yii2x\\ui\\access\\menu\\": ""
+        }
+    }
+}
