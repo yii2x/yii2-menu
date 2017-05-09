@@ -5,12 +5,13 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Html;
+use yii2x\ui\menu\models\Menu;
 /**
  * Class Menu
  * Theme menu widget.
  */
 // \app\components\accessAdminMenu
-class AdminMenuWidget extends \yii\widgets\Menu
+class MenuWidget extends \yii\widgets\Menu
 {
     /**
      * @inheritdoc
@@ -26,11 +27,16 @@ class AdminMenuWidget extends \yii\widgets\Menu
     public function init()
     {
         if(!empty($this->alias)){
-            $model = \app\models\Menu::find()->where(['alias' => $this->alias])->one();
-            if(!empty($model->config) && is_array($model->config['children'])){
-                $this->items = $model->config['children'];
-            }               
+            $this->items = self::getItems($this->alias);
         }     
+    }
+    
+    public static function getItems($alias){
+        $model = Menu::find()->where(['alias' => $alias])->one();
+        if(!empty($model->config) && is_array($model->config['children'])){
+            return $model->config['children'];
+        }               
+        return [];
     }
     
     protected function renderItem($item)
