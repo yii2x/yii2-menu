@@ -34,7 +34,7 @@ class MenuWidget extends \yii\widgets\Menu
     public static function getItems($alias){
         $model = Menu::find()->where(['alias' => $alias])->one();
         if(!empty($model->config) && is_array($model->config['children'])){
-            return $model->config['children'];
+            return self::normalizeVisibility($model->config['children']);
         }               
         return [];
     }
@@ -42,14 +42,23 @@ class MenuWidget extends \yii\widgets\Menu
     protected function renderItem($item)
     {
 
-        $item['schema'] = '';
+        if(empty($item['scheme']) || $item['scheme'] == 'rel'){
+            $item['scheme'] = false;    
+        }
+        else if($item['scheme'] == 'abs'){
+            $item['scheme'] = true;    
+        }     
+        else if($item['scheme'] == 'protrel'){
+            $item['scheme'] = "";    
+        }   
+        
         if (empty($item['url'])) {
             $item['url'] = '#';
         }
         
         $out = '';
 
-            $out .= Html::beginTag ('a', $options = ['href' => Url::to([$item['url']], $item['schema'])] );
+            $out .= Html::beginTag ('a', $options = ['href' => Url::to([$item['url']], $item['scheme'])] );
             if(!empty($item['iconCls'])){
                 $out .= Html::tag('i', null, ['class' => $item['iconCls']]);
             }
@@ -121,14 +130,44 @@ class MenuWidget extends \yii\widgets\Menu
     /**
      * @inheritdoc
      */
-    protected function normalizeItems($items, &$active)
-    {
+    
+    public static function normalizeVisibility($items){
         if(is_array($items)){
             foreach ($items as $i => $item) {
-                if (isset($item['visible']) && !$item['visible']) {
-                    unset($items[$i]);
-                    continue;
+
+                
+                if (isset($item['visibility']) && $item['visibility'] != 'on') {
+                    if($item['visibility'] == 'off'){
+                        unset($items[$i]);
+                        continue;
+                    }     
+
+                    if($item['visibility'] == 'guest' && Yii::$app->user->isGuest == false){
+                        unset($items[$i]);
+                        continue;
+                    }  
+                    
+                    if($item['visibility'] == 'auth' && Yii::$app->user->isGuest == true){
+                        unset($items[$i]);
+                        continue;
+                    }                      
                 }
+                
+                if (isset($item['children'])  && is_array($item['children'])) {
+                    $items[$i]['items'] = self::normalizeVisibility($item['children']);
+                }
+                
+            }
+        }
+        return $items;
+    }
+    
+    protected function normalizeItems($items, &$active)
+    {
+        
+        if(is_array($items)){
+            foreach ($items as $i => $item) {
+                
                 if (!isset($item['label'])) {
                     $item['label'] = '';
                 }
@@ -136,10 +175,10 @@ class MenuWidget extends \yii\widgets\Menu
                 $items[$i]['label'] = $encodeLabel ? Html::encode($item['label']) : $item['label'];
                 $items[$i]['icon'] = isset($item['icon']) ? $item['icon'] : '';
                 $hasActiveChild = false;
-                if (isset($item['children'])  && is_array($item['children'])) {
-                    $items[$i]['items'] = $this->normalizeItems($item['children'], $hasActiveChild);
-                    if (empty($items[$i]['children']) && $this->hideEmptyItems) {
-                        unset($items[$i]['children']);
+                if (isset($item['items'])  && is_array($item['items'])) {
+                    $items[$i]['items'] = $this->normalizeItems($item['items'], $hasActiveChild);
+                    if (empty($items[$i]['items']) && $this->hideEmptyItems) {
+                        unset($items[$i]['items']);
                         if (!isset($item['url'])) {
                             unset($items[$i]);
                             continue;
