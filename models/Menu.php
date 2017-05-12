@@ -4,6 +4,7 @@ namespace yii2x\ui\menu\models;
 
 use Yii;
 use yii2x\common\behaviors\JsonFieldBehavior;
+use yii2x\common\behaviors\GuestViewOnlyBehavior;
 
 /**
  * This is the model class for table "menu".
@@ -55,7 +56,11 @@ class Menu extends \yii\db\ActiveRecord
             [
                 'class' => JsonFieldBehavior::className(),
                 'attributes' => ['config']
-            ]
+            ],
+            [
+                'class' => GuestViewOnlyBehavior::className(),
+                'attributes' => ['name']
+            ]   
         ];
     }    
     

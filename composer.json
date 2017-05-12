@@ -12,7 +12,8 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "yii2x/yii2-ext-admin-lib": "@dev"
+        "yii2x/yii2-ext-admin-lib": "@dev",
+        "yii2x/yii2-common" : "@dev"
     },
     "repositories":[
         {

@@ -123,21 +123,21 @@ class MenuWidget extends \yii\widgets\Menu
         if(is_array($items)){
             foreach ($items as $i => $item) {
 
-                if(empty($item['scheme']) || $item['scheme'] == 'rel'){
-                    $item['scheme'] = false;    
+                if(empty($items[$i]['scheme']) || $items[$i]['scheme'] == 'rel'){
+                    $items[$i]['scheme'] = false;    
                 }
-                else if($item['scheme'] == 'abs'){
-                    $item['scheme'] = true;    
+                else if($items[$i]['scheme'] == 'abs'){
+                    $items[$i]['scheme'] = true;    
                 }     
-                else if($item['scheme'] == 'protrel'){
-                    $item['scheme'] = "";    
+                else if($items[$i]['scheme'] == 'protrel'){
+                    $items[$i]['scheme'] = "";    
                 }   
 
-                if (empty($item['url'])) {
-                    $item['url'] = '#';
+                if (empty($items[$i]['url'])) {
+                    $items[$i]['url'] = '#';
                 }  
                 else{
-                    $item['url'] = Url::to([$item['url']], $item['scheme']);
+                    $items[$i]['url'] = Url::to([$items[$i]['url']], $items[$i]['scheme']);
                 }
                 
                 if (isset($item['visibility']) && $item['visibility'] != 'on') {
